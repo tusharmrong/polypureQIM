@@ -1,10 +1,10 @@
 ﻿# Versioning Guide
 
-Current app version: 1.0.1
+Current app version: 1.1.0
 
 Main release control file: release.json
 
-Current release date: 2026-04-28
+Current release date: 2026-04-29
 
 Current release status: stable
 
