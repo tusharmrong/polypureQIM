@@ -1,0 +1,26 @@
+﻿{
+    "appName":  "Poly Pure PWA",
+    "version":  "1.0.1",
+    "releaseDate":  "2026-04-28",
+    "status":  "stable",
+    "deployTarget":  "GitHub Pages",
+    "backupFolder":  "backups/v1.0.1",
+    "filesToUpdate":  [
+                          "release.json",
+                          "sync-release.ps1",
+                          "new-release.ps1",
+                          "release-patch.bat",
+                          "release-minor.bat",
+                          "release-major.bat"
+                      ],
+    "releaseNotes":  [
+                         "Auto-created patch release v1.0.1 on 2026-04-28",
+                         "Initial Poly Pure quotation, invoice, and money receipt PWA release",
+                         "Added release manager and automatic update check support"
+                     ],
+    "nextReleaseChecklist":  [
+                                 "Run new-release.ps1 -Bump patch|minor|major",
+                                 "Review release notes in release.json",
+                                 "Upload updated folder to GitHub Pages or your static host"
+                             ]
+}

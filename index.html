@@ -1,0 +1,174 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#b91c1c">
+  <meta name="description" content="Poly Pure PWA for quotations, invoices, and money receipts.">
+  <title>Poly Pure PWA</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icon-192.svg">
+  <style>
+    :root{--red:#c81e1e;--red2:#ef4444;--soft:#fff5f5;--line:#e5e7eb;--ink:#1f2937;--muted:#6b7280;--white:#fff;--shadow:0 16px 36px rgba(200,30,30,.12)}
+    *{box-sizing:border-box} body{margin:0;font-family:Segoe UI,Arial,sans-serif;color:var(--ink);background:linear-gradient(180deg,#fff,#fff4f4)}
+    button,input,select,textarea{font:inherit} .app{width:min(1160px,calc(100% - 24px));margin:0 auto;padding:16px 0 32px}
+    .header{position:sticky;top:0;z-index:5;background:rgba(255,255,255,.94);backdrop-filter:blur(12px);padding:18px;border:1px solid #fff;border-radius:24px;box-shadow:var(--shadow);margin-bottom:16px}
+    .brand{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:14px} .brand h1{margin:0;font-size:clamp(1.5rem,4vw,2.2rem)} .brand p{margin:4px 0 0;color:var(--muted)}
+    .badge{padding:10px 14px;border-radius:999px;background:linear-gradient(135deg,var(--red),var(--red2));color:#fff;font-weight:700}
+    .tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px} .tab{border:1px solid var(--line);background:#fff;border-radius:999px;padding:12px 10px;font-weight:700;cursor:pointer}
+    .tab.active{background:linear-gradient(135deg,var(--red),var(--red2));color:#fff;border-color:transparent}
+    .meta{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:14px;padding-top:14px;border-top:1px solid var(--line);color:var(--muted);font-size:.92rem}
+    .panel{display:none}.panel.active{display:block}.grid{display:grid;grid-template-columns:1fr;gap:18px}
+    .card{background:#fff;border:1px solid var(--line);border-radius:24px;box-shadow:0 14px 30px rgba(15,23,42,.06);overflow:hidden}.card-head{padding:18px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,#fff,var(--soft))}.card-head h2,.card-head h3{margin:0;font-size:1.05rem}.card-head p{margin:6px 0 0;color:var(--muted)}.card-body{padding:18px}
+    .form-grid{display:grid;grid-template-columns:1fr;gap:14px}.field{display:grid;gap:8px}.field label{font-weight:700}.field input,.field select,.field textarea{width:100%;padding:12px 14px;border:1px solid #d1d5db;border-radius:12px;background:#fff}.field textarea{min-height:100px;resize:vertical}.field input[readonly]{background:#f9fafb}
+    .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}.btn{border:0;border-radius:999px;padding:12px 18px;font-weight:700;cursor:pointer}.primary{background:linear-gradient(135deg,var(--red),var(--red2));color:#fff}.secondary{background:#fee2e2;color:#991b1b}.ghost{background:#f3f4f6;color:var(--ink)}
+    .paper{width:100%;min-height:1122px;background:#fff;padding:28px}.pv-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;border-bottom:2px solid #fee2e2;padding-bottom:18px;margin-bottom:20px}.pv-brand h2{margin:0;font-size:2rem;color:#b91c1c}.pv-brand p,.pv-meta p,.note,.sum span:first-child{color:var(--muted)}.pv-brand p,.pv-meta p{margin:6px 0 0}.label{display:inline-block;padding:8px 14px;border-radius:999px;background:#fee2e2;color:#b91c1c;font-weight:800;font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}.pv-meta{text-align:right}
+    .section{margin-bottom:22px}.section h3{margin:0 0 12px}.info,.summary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.item,.sum{padding:14px;border:1px solid var(--line);border-radius:16px;background:#fff}.item strong,.sum strong{display:block;margin-top:6px}.sum.total{background:linear-gradient(135deg,var(--red),var(--red2));border-color:transparent;color:#fff}.sum.total span:first-child,.sum.total strong{color:#fff}
+    table{width:100%;border-collapse:collapse;border:1px solid var(--line);border-radius:16px;overflow:hidden} th,td{padding:14px 12px;text-align:left;border-bottom:1px solid var(--line)} th{background:var(--soft);color:#b91c1c}
+    .status{display:inline-flex;padding:8px 12px;border-radius:999px;font-weight:800;font-size:.8rem}.paid{background:#dcfce7;color:#15803d}.due{background:#ffedd5;color:#b45309}.note{margin-top:16px;padding:14px 16px;border-left:4px solid var(--red2);background:var(--soft);border-radius:0 12px 12px 0;white-space:pre-wrap}.sign{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px;margin-top:40px}.sig{padding-top:24px;border-top:1px dashed #9ca3af;text-align:center;color:var(--muted);font-weight:700}.foot{margin-top:24px;text-align:center;color:var(--muted)}
+    @media(min-width:900px){.grid{grid-template-columns:minmax(360px,420px) minmax(0,1fr)}.form-grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media(max-width:640px){.app{width:min(100%,calc(100% - 16px));padding-top:8px}.header,.card-head,.card-body{padding-left:14px;padding-right:14px}.tabs{grid-template-columns:1fr}.brand,.pv-head,.sign,.info,.summary{display:grid;grid-template-columns:1fr}.pv-meta{text-align:left}.paper{min-height:auto;padding:18px}}
+    @media print{body{background:#fff}.header,.form-card,.actions,.hint{display:none!important}.app{width:100%;margin:0;padding:0}.panel{display:none!important}.panel.active{display:block!important}.grid{display:block}.card.preview{box-shadow:none;border:0}.paper{padding:0;min-height:auto}@page{size:A4;margin:12mm}}
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <div class="brand">
+        <div><h1>Poly Pure</h1><p>Plastic shopping bag quotation, invoice, and receipt manager.</p></div>
+        <div class="badge" id="sectionTitle">Quotation</div>
+      </div>
+      <nav class="tabs" aria-label="Document sections">
+        <button class="tab active" type="button" data-tab="quotation">Quotation</button>
+        <button class="tab" type="button" data-tab="invoice">Invoice</button>
+        <button class="tab" type="button" data-tab="receipt">Money Receipt</button>
+      </nav>
+      <div class="meta">
+        <span id="appVersion">Version 1.0.1</span>
+        <span id="updateStatus">stable release</span>
+      </div>
+    </header>
+    <main>
+      <section class="panel active" data-panel="quotation">
+        <div class="grid">
+          <article class="card form-card"><div class="card-head"><h2>Quotation Form</h2><p>Fill in customer and product information to prepare a quotation.</p></div><div class="card-body">
+            <form class="doc-form" data-section="quotation">
+              <div class="form-grid two">
+                <div class="field"><label for="quotation-clientName">Client Name</label><input id="quotation-clientName" name="clientName" type="text"></div>
+                <div class="field"><label for="quotation-clientPhone">Client Phone</label><input id="quotation-clientPhone" name="clientPhone" type="tel"></div>
+                <div class="field"><label for="quotation-clientAddress">Client Address</label><textarea id="quotation-clientAddress" name="clientAddress"></textarea></div>
+                <div class="field"><label for="quotation-date">Date</label><input id="quotation-date" name="date" type="date"></div>
+                <div class="field"><label for="quotation-productName">Product Name</label><input id="quotation-productName" name="productName" type="text"></div>
+                <div class="field"><label for="quotation-size">Size</label><input id="quotation-size" name="size" type="text" placeholder="e.g. 14 x 18 inch"></div>
+                <div class="field"><label for="quotation-thickness">Thickness</label><input id="quotation-thickness" name="thickness" type="text" placeholder="e.g. 40 micron"></div>
+                <div class="field"><label for="quotation-quantity">Quantity</label><input id="quotation-quantity" name="quantity" type="number" min="0" step="1"></div>
+                <div class="field"><label for="quotation-unitPrice">Unit Price</label><input id="quotation-unitPrice" name="unitPrice" type="number" min="0" step="0.01"></div>
+                <div class="field"><label for="quotation-totalPrice">Total Price</label><input id="quotation-totalPrice" name="totalPrice" type="number" readonly></div>
+                <div class="field"><label for="quotation-validity">Validity</label><input id="quotation-validity" name="validity" type="text"></div>
+                <div class="field"><label for="quotation-notes">Notes</label><textarea id="quotation-notes" name="notes"></textarea></div>
+              </div>
+              <div class="actions"><button class="btn primary" type="button" data-action="generate" data-section="quotation">Generate</button><button class="btn secondary" type="button" data-action="print" data-section="quotation">Print / Download PDF</button><button class="btn ghost" type="button" data-action="reset" data-section="quotation">Reset</button></div>
+            </form>
+          </div></article>
+          <article class="card preview"><div class="card-head"><h3>Live Preview</h3><p class="hint">Updates automatically while you type.</p></div><div class="card-body"><div class="paper" id="quotation-preview"></div></div></article>
+        </div>
+      </section>
+      <section class="panel" data-panel="invoice">
+        <div class="grid">
+          <article class="card form-card"><div class="card-head"><h2>Invoice Form</h2><p>Create an invoice with auto-calculated totals and payment status.</p></div><div class="card-body">
+            <form class="doc-form" data-section="invoice">
+              <div class="form-grid two">
+                <div class="field"><label for="invoice-clientName">Client Name</label><input id="invoice-clientName" name="clientName" type="text"></div>
+                <div class="field"><label for="invoice-clientPhone">Client Phone</label><input id="invoice-clientPhone" name="clientPhone" type="tel"></div>
+                <div class="field"><label for="invoice-clientAddress">Client Address</label><textarea id="invoice-clientAddress" name="clientAddress"></textarea></div>
+                <div class="field"><label for="invoice-date">Date</label><input id="invoice-date" name="date" type="date"></div>
+                <div class="field"><label for="invoice-invoiceNumber">Invoice Number</label><input id="invoice-invoiceNumber" name="invoiceNumber" type="text" readonly></div>
+                <div class="field"><label for="invoice-productName">Product Name</label><input id="invoice-productName" name="productName" type="text"></div>
+                <div class="field"><label for="invoice-size">Size</label><input id="invoice-size" name="size" type="text"></div>
+                <div class="field"><label for="invoice-thickness">Thickness</label><input id="invoice-thickness" name="thickness" type="text"></div>
+                <div class="field"><label for="invoice-quantity">Quantity</label><input id="invoice-quantity" name="quantity" type="number" min="0" step="1"></div>
+                <div class="field"><label for="invoice-unitPrice">Unit Price</label><input id="invoice-unitPrice" name="unitPrice" type="number" min="0" step="0.01"></div>
+                <div class="field"><label for="invoice-subtotal">Subtotal</label><input id="invoice-subtotal" name="subtotal" type="number" readonly></div>
+                <div class="field"><label for="invoice-discount">Discount</label><input id="invoice-discount" name="discount" type="number" min="0" step="0.01"></div>
+                <div class="field"><label for="invoice-totalAmount">Total Amount</label><input id="invoice-totalAmount" name="totalAmount" type="number" readonly></div>
+                <div class="field"><label for="invoice-paidAmount">Paid Amount</label><input id="invoice-paidAmount" name="paidAmount" type="number" min="0" step="0.01"></div>
+                <div class="field"><label for="invoice-dueAmount">Due Amount</label><input id="invoice-dueAmount" name="dueAmount" type="number" readonly></div>
+                <div class="field"><label for="invoice-status">Status</label><input id="invoice-status" name="status" type="text" readonly></div>
+              </div>
+              <div class="actions"><button class="btn primary" type="button" data-action="generate" data-section="invoice">Generate</button><button class="btn secondary" type="button" data-action="print" data-section="invoice">Print / Download PDF</button><button class="btn ghost" type="button" data-action="reset" data-section="invoice">Reset</button></div>
+            </form>
+          </div></article>
+          <article class="card preview"><div class="card-head"><h3>Live Preview</h3><p class="hint">Formatted for clean A4 printing.</p></div><div class="card-body"><div class="paper" id="invoice-preview"></div></div></article>
+        </div>
+      </section>
+      <section class="panel" data-panel="receipt">
+        <div class="grid">
+          <article class="card form-card"><div class="card-head"><h2>Money Receipt Form</h2><p>Record received payments with auto-generated receipt numbers.</p></div><div class="card-body">
+            <form class="doc-form" data-section="receipt">
+              <div class="form-grid two">
+                <div class="field"><label for="receipt-clientName">Client Name</label><input id="receipt-clientName" name="clientName" type="text"></div>
+                <div class="field"><label for="receipt-clientPhone">Client Phone</label><input id="receipt-clientPhone" name="clientPhone" type="tel"></div>
+                <div class="field"><label for="receipt-clientAddress">Client Address</label><textarea id="receipt-clientAddress" name="clientAddress"></textarea></div>
+                <div class="field"><label for="receipt-date">Date</label><input id="receipt-date" name="date" type="date"></div>
+                <div class="field"><label for="receipt-receiptNumber">Receipt Number</label><input id="receipt-receiptNumber" name="receiptNumber" type="text" readonly></div>
+                <div class="field"><label for="receipt-receivedFrom">Received From</label><input id="receipt-receivedFrom" name="receivedFrom" type="text"></div>
+                <div class="field"><label for="receipt-amountReceived">Amount Received</label><input id="receipt-amountReceived" name="amountReceived" type="number" min="0" step="0.01"></div>
+                <div class="field"><label for="receipt-paymentMethod">Payment Method</label><select id="receipt-paymentMethod" name="paymentMethod"><option value="Cash">Cash</option><option value="Bank">Bank</option><option value="Mobile Banking">Mobile Banking</option></select></div>
+                <div class="field"><label for="receipt-referenceNote">Reference Note</label><textarea id="receipt-referenceNote" name="referenceNote"></textarea></div>
+                <div class="field"><label for="receipt-receivedBy">Received By</label><input id="receipt-receivedBy" name="receivedBy" type="text"></div>
+              </div>
+              <div class="actions"><button class="btn primary" type="button" data-action="generate" data-section="receipt">Generate</button><button class="btn secondary" type="button" data-action="print" data-section="receipt">Print / Download PDF</button><button class="btn ghost" type="button" data-action="reset" data-section="receipt">Reset</button></div>
+            </form>
+          </div></article>
+          <article class="card preview"><div class="card-head"><h3>Live Preview</h3><p class="hint">Receipt preview stays synced with form data.</p></div><div class="card-body"><div class="paper" id="receipt-preview"></div></div></article>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script>
+    const APP_VERSION='1.0.1';
+    const KEY='poly-pure-pwa-state-v1';
+    const TITLES={quotation:'Quotation',invoice:'Invoice',receipt:'Money Receipt'};
+    const byId=(id)=>document.getElementById(id);
+    const previews={quotation:byId('quotation-preview'),invoice:byId('invoice-preview'),receipt:byId('receipt-preview')};
+    const appVersionLabel=byId('appVersion');
+    const updateStatusLabel=byId('updateStatus');
+    const today=()=>new Date().toISOString().slice(0,10);
+    const money=(v)=>(Number(v)||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+    const esc=(v)=>String(v||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+    const docNo=(p)=>{const d=new Date();const s=[d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0'),String(d.getHours()).padStart(2,'0'),String(d.getMinutes()).padStart(2,'0'),String(d.getSeconds()).padStart(2,'0')].join('');return p+'-'+s};
+    const qDefault=()=>({clientName:'',clientPhone:'',clientAddress:'',date:today(),productName:'Plastic Shopping Bag',size:'',thickness:'',quantity:0,unitPrice:0,totalPrice:0,validity:'7 days',notes:''});
+    const iDefault=()=>({clientName:'',clientPhone:'',clientAddress:'',date:today(),invoiceNumber:docNo('INV'),productName:'Plastic Shopping Bag',size:'',thickness:'',quantity:0,unitPrice:0,subtotal:0,discount:0,totalAmount:0,paidAmount:0,dueAmount:0,status:'Due'});
+    const rDefault=()=>({clientName:'',clientPhone:'',clientAddress:'',date:today(),receiptNumber:docNo('MR'),receivedFrom:'',amountReceived:0,paymentMethod:'Cash',referenceNote:'',receivedBy:'Poly Pure'});
+    const state={activeSection:'quotation',quotation:qDefault(),invoice:iDefault(),receipt:rDefault()};
+    const numFields=['quantity','unitPrice','totalPrice','subtotal','discount','totalAmount','paidAmount','dueAmount','amountReceived'];
+    function recalcQ(){state.quotation.totalPrice=(Number(state.quotation.quantity)||0)*(Number(state.quotation.unitPrice)||0)}
+    function recalcI(){const i=state.invoice;i.subtotal=(Number(i.quantity)||0)*(Number(i.unitPrice)||0);i.totalAmount=Math.max(i.subtotal-(Number(i.discount)||0),0);i.dueAmount=Math.max(i.totalAmount-(Number(i.paidAmount)||0),0);i.status=i.dueAmount<=0&&i.totalAmount>0?'Paid':'Due'}
+    function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(!s)return;state.activeSection=s.activeSection||state.activeSection;state.quotation={...qDefault(),...(s.quotation||{})};state.invoice={...iDefault(),...(s.invoice||{})};state.receipt={...rDefault(),...(s.receipt||{})};recalcQ();recalcI()}catch(e){console.warn('Could not restore saved data.',e)}}
+    function save(){localStorage.setItem(KEY,JSON.stringify(state))}
+    function sync(section){const form=document.querySelector('[data-section="'+section+'"]');Object.entries(state[section]).forEach(([k,v])=>{const el=form.elements.namedItem(k);if(el)el.value=v})}
+    function syncAll(){sync('quotation');sync('invoice');sync('receipt')}
+    function renderQ(){const d=state.quotation;previews.quotation.innerHTML=`<div class="pv-head"><div class="pv-brand"><div class="label">Quotation</div><h2>Poly Pure</h2><p>Plastic Shopping Bag Supplier</p></div><div class="pv-meta"><p><strong>Date:</strong> ${esc(d.date)}</p><p><strong>Validity:</strong> ${esc(d.validity||'-')}</p></div></div><div class="section"><h3>Client Details</h3><div class="info"><div class="item"><span>Client Name</span><strong>${esc(d.clientName||'-')}</strong></div><div class="item"><span>Client Phone</span><strong>${esc(d.clientPhone||'-')}</strong></div><div class="item"><span>Client Address</span><strong>${esc(d.clientAddress||'-')}</strong></div><div class="item"><span>Product</span><strong>${esc(d.productName||'-')}</strong></div></div></div><div class="section"><table><thead><tr><th>Product Name</th><th>Size</th><th>Thickness</th><th>Quantity</th><th>Unit Price</th><th>Total</th></tr></thead><tbody><tr><td>${esc(d.productName||'-')}</td><td>${esc(d.size||'-')}</td><td>${esc(d.thickness||'-')}</td><td>${esc(d.quantity||0)}</td><td>${money(d.unitPrice)}</td><td>${money(d.totalPrice)}</td></tr></tbody></table></div><div class="summary"><div class="sum"><span>Unit Price</span><strong>${money(d.unitPrice)}</strong></div><div class="sum total"><span>Total Price</span><strong>${money(d.totalPrice)}</strong></div></div><div class="note"><strong>Notes:</strong>\n${esc(d.notes||'No additional notes.')}</div><div class="foot">Thank you for considering Poly Pure.</div>`}
+    function renderI(){const d=state.invoice;const cls=d.status==='Paid'?'paid':'due';previews.invoice.innerHTML=`<div class="pv-head"><div class="pv-brand"><div class="label">Invoice</div><h2>Poly Pure</h2><p>Plastic Shopping Bag Supplier</p></div><div class="pv-meta"><p><strong>Invoice No:</strong> ${esc(d.invoiceNumber)}</p><p><strong>Date:</strong> ${esc(d.date)}</p><p><span class="status ${cls}">${esc(d.status)}</span></p></div></div><div class="section"><h3>Bill To</h3><div class="info"><div class="item"><span>Client Name</span><strong>${esc(d.clientName||'-')}</strong></div><div class="item"><span>Client Phone</span><strong>${esc(d.clientPhone||'-')}</strong></div><div class="item"><span>Client Address</span><strong>${esc(d.clientAddress||'-')}</strong></div><div class="item"><span>Product</span><strong>${esc(d.productName||'-')}</strong></div></div></div><div class="section"><table><thead><tr><th>Description</th><th>Size</th><th>Thickness</th><th>Quantity</th><th>Unit Price</th><th>Subtotal</th></tr></thead><tbody><tr><td>${esc(d.productName||'-')}</td><td>${esc(d.size||'-')}</td><td>${esc(d.thickness||'-')}</td><td>${esc(d.quantity||0)}</td><td>${money(d.unitPrice)}</td><td>${money(d.subtotal)}</td></tr></tbody></table></div><div class="summary"><div class="sum"><span>Subtotal</span><strong>${money(d.subtotal)}</strong></div><div class="sum"><span>Discount</span><strong>${money(d.discount)}</strong></div><div class="sum"><span>Paid Amount</span><strong>${money(d.paidAmount)}</strong></div><div class="sum total"><span>Due Amount</span><strong>${money(d.dueAmount)}</strong></div></div><div class="summary" style="margin-top:12px"><div class="sum total"><span>Total Amount</span><strong>${money(d.totalAmount)}</strong></div></div><div class="sign"><div class="sig">Authorized By</div><div class="sig">Client Signature</div></div>`}
+    function renderR(){const d=state.receipt;previews.receipt.innerHTML=`<div class="pv-head"><div class="pv-brand"><div class="label">Money Receipt</div><h2>Poly Pure</h2><p>Plastic Shopping Bag Supplier</p></div><div class="pv-meta"><p><strong>Receipt No:</strong> ${esc(d.receiptNumber)}</p><p><strong>Date:</strong> ${esc(d.date)}</p></div></div><div class="section"><div class="info"><div class="item"><span>Received From</span><strong>${esc(d.receivedFrom||d.clientName||'-')}</strong></div><div class="item"><span>Client Phone</span><strong>${esc(d.clientPhone||'-')}</strong></div><div class="item"><span>Client Address</span><strong>${esc(d.clientAddress||'-')}</strong></div><div class="item"><span>Payment Method</span><strong>${esc(d.paymentMethod||'-')}</strong></div></div></div><div class="summary"><div class="sum total"><span>Amount Received</span><strong>${money(d.amountReceived)}</strong></div><div class="sum"><span>Received By</span><strong>${esc(d.receivedBy||'-')}</strong></div></div><div class="note"><strong>Reference Note:</strong>\n${esc(d.referenceNote||'No reference note added.')}</div><div class="sign"><div class="sig">Prepared By</div><div class="sig">${esc(d.receivedBy||'Poly Pure')}</div></div>`}
+    function render(){document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===state.activeSection));document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.dataset.panel===state.activeSection));byId('sectionTitle').textContent=TITLES[state.activeSection];renderQ();renderI();renderR()}
+    function update(section,key,value){state[section][key]=numFields.includes(key)?(Number(value)||0):value;if(section==='quotation')recalcQ();if(section==='invoice')recalcI();if(section==='receipt'&&key==='clientName'&&!state.receipt.receivedFrom)state.receipt.receivedFrom=value;sync(section);render();save()}
+    function reset(section){if(section==='quotation')state.quotation=qDefault();if(section==='invoice')state.invoice=iDefault();if(section==='receipt')state.receipt=rDefault();sync(section);render();save()}
+    function setTab(section){state.activeSection=section;render();save()}
+    document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>setTab(b.dataset.tab)));
+    document.querySelectorAll('.doc-form').forEach(form=>form.addEventListener('input',e=>{if(e.target.name)update(form.dataset.section,e.target.name,e.target.value)}));
+    document.querySelectorAll('[data-action]').forEach(btn=>btn.addEventListener('click',()=>{const action=btn.dataset.action,section=btn.dataset.section;if(action==='generate'){if(section==='quotation')recalcQ();if(section==='invoice')recalcI();sync(section);render();save()}if(action==='print'){setTab(section);window.print()}if(action==='reset')reset(section)}));
+    function compareVersions(a,b){const pa=String(a).split('.').map(Number),pb=String(b).split('.').map(Number);for(let i=0;i<3;i+=1){const diff=(pa[i]||0)-(pb[i]||0);if(diff!==0)return diff>0?1:-1}return 0}
+    function applyWaitingWorker(worker){worker.postMessage({type:'SKIP_WAITING'})}
+    function watchServiceWorker(reg){if(reg.waiting){updateStatusLabel.textContent='Applying latest version...';applyWaitingWorker(reg.waiting)}reg.addEventListener('updatefound',()=>{const nw=reg.installing;if(!nw)return;updateStatusLabel.textContent='Checking for updates...';nw.addEventListener('statechange',()=>{if(nw.state==='installed'&&navigator.serviceWorker.controller){updateStatusLabel.textContent='Applying latest version...';applyWaitingWorker(nw)}})})}
+    async function checkForUpdates(reg,silent=false){try{if(!silent)updateStatusLabel.textContent='Checking for updates...';const res=await fetch('./release.json?ts='+Date.now(),{cache:'no-store'});const data=res.ok?await res.json():null;await reg.update();if(data&&compareVersions(data.version,APP_VERSION)>0){updateStatusLabel.textContent='New version found';return}updateStatusLabel.textContent='System is up to date'}catch(err){if(!navigator.onLine){updateStatusLabel.textContent='Offline mode';return}console.warn('Update check failed.',err);updateStatusLabel.textContent='Update check unavailable'}}
+    function registerSW(){if('serviceWorker' in navigator){window.addEventListener('load',async()=>{try{const reg=await navigator.serviceWorker.register('./service-worker.js');watchServiceWorker(reg);checkForUpdates(reg,true);setInterval(()=>checkForUpdates(reg,true),300000);navigator.serviceWorker.addEventListener('controllerchange',()=>window.location.reload())}catch(err){console.warn('Service worker registration failed.',err)}})}}
+    function exposeHooks(){window.PolyPureApp={getState(){return JSON.parse(JSON.stringify(state))},setSectionData(section,data){if(!state[section]||typeof data!=='object')return;state[section]={...state[section],...data};if(section==='quotation')recalcQ();if(section==='invoice')recalcI();sync(section);render();save()},switchSection(section){if(TITLES[section])setTab(section)}}}
+    appVersionLabel.textContent='Version '+APP_VERSION;
+    load();recalcQ();recalcI();syncAll();render();save();registerSW();exposeHooks();
+  </script>
+</body>
+</html>
+
+
