@@ -30,7 +30,32 @@
     .status{display:inline-flex;padding:8px 12px;border-radius:999px;font-weight:800;font-size:.8rem}.paid{background:#dcfce7;color:#15803d}.due{background:#ffedd5;color:#b45309}.note{margin-top:16px;padding:14px 16px;border-left:4px solid var(--red2);background:var(--soft);border-radius:0 12px 12px 0;white-space:pre-wrap}.legal{font-size:.82rem;line-height:1.6}.legal strong{display:block;margin-bottom:6px;color:var(--ink)}.sign{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px;margin-top:40px}.sig{padding-top:24px;border-top:1px dashed #9ca3af;text-align:center;color:var(--muted);font-weight:700;min-height:48px}.foot{margin-top:24px;padding-top:14px;border-top:1px solid var(--line);text-align:center;color:var(--muted);line-height:1.6}
     @media(min-width:900px){.grid{grid-template-columns:minmax(360px,420px) minmax(0,1fr)}.form-grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}}
     @media(max-width:640px){.app{width:min(100%,calc(100% - 16px));padding-top:8px}.header,.card-head,.card-body{padding-left:14px;padding-right:14px}.tabs{grid-template-columns:1fr}.brand,.pv-head,.sign,.info,.summary{display:grid;grid-template-columns:1fr}.pv-meta{text-align:left}.paper{min-height:auto;padding:18px}}
-    @media print{body{background:#fff}.header,.form-card,.actions,.hint{display:none!important}.app{width:100%;margin:0;padding:0}.panel{display:none!important}.panel.active{display:block!important}.grid{display:block}.card.preview{box-shadow:none;border:0}.paper{padding:0;min-height:auto}@page{size:A4;margin:12mm}}
+    @media print{
+      body{background:#fff;font-size:11px}
+      .header,.form-card,.actions,.hint,.preview .card-head{display:none!important}
+      .app{width:100%;margin:0;padding:0}
+      .panel{display:none!important}
+      .panel.active{display:block!important}
+      .grid{display:block}
+      .card.preview{box-shadow:none;border:0}
+      .card.preview .card-body{padding:0}
+      .paper{padding:0;min-height:auto;font-size:11px}
+      .pv-head{padding-bottom:10px;margin-bottom:12px}
+      .pv-brand h2{font-size:1.55rem}
+      .pv-brand p,.pv-meta p,.pv-company,.foot,.note,.legal,.item,.sum,th,td{font-size:11px}
+      .section{margin-bottom:12px}
+      .section h3{font-size:1rem;margin-bottom:8px}
+      .info,.summary{gap:8px}
+      .item,.sum{padding:9px 10px}
+      th,td{padding:8px 7px}
+      .note{margin-top:10px;padding:8px 10px}
+      .sign{margin-top:18px;gap:16px}
+      .sig{padding-top:14px;min-height:28px;font-size:11px}
+      .foot{margin-top:14px;padding-top:8px}
+      .compact-list{margin:0;padding-left:14px}
+      .compact-list li{margin:0 0 2px}
+      @page{size:A4;margin:8mm}
+    }
   </style>
 </head>
 <body>
@@ -48,7 +73,7 @@
         <button class="tab" type="button" data-tab="receipt">Money Receipt</button>
       </nav>
       <div class="meta">
-        <span id="appVersion">Version 1.4.3</span>
+        <span id="appVersion">Version 1.4.4</span>
         <span id="updateStatus">stable release</span>
       </div>
     </header>
@@ -144,7 +169,7 @@
     </main>
   </div>
   <script>
-    const APP_VERSION='1.4.3';
+    const APP_VERSION='1.4.4';
     const KEY='poly-pure-pwa-state-v1';
     const SERIAL_KEY='poly-pure-pwa-serials-v1';
     const TITLES={quotation:'Quotation',invoice:'Invoice',receipt:'Money Receipt'};
@@ -229,6 +254,7 @@ Must include your cash-out charge for mobile banking.`;
   </script>
 </body>
 </html>
+
 
 
 
