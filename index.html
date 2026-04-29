@@ -79,7 +79,7 @@
         <button class="tab" type="button" data-tab="receipt">Money Receipt</button>
       </nav>
       <div class="meta">
-        <span id="appVersion">Version 1.4.5</span>
+        <span id="appVersion">Version 1.4.7</span>
         <span id="updateStatus">stable release</span>
       </div>
     </header>
@@ -173,7 +173,7 @@
     </main>
   </div>
   <script>
-    const APP_VERSION='1.4.5';
+    const APP_VERSION='1.4.7';
     const KEY='poly-pure-pwa-state-v1';
     const SERIAL_KEY='poly-pure-pwa-serials-v1';
     const TITLES={quotation:'Quotation',invoice:'Invoice',receipt:'Money Receipt'};
@@ -256,17 +256,21 @@ Must include your cash-out charge for mobile banking.`;
     document.querySelectorAll('.doc-form').forEach(form=>form.addEventListener('input',e=>{const field=e.target.dataset.itemField;if(field){updateItem(e.target.dataset.section,Number(e.target.dataset.index),field,e.target.value)}}));
     document.addEventListener('click',e=>{const btn=e.target.closest('[data-action]');if(!btn)return;const action=btn.dataset.action,section=btn.dataset.section;if(action==='generate'){if(section==='quotation')recalcQ();if(section==='invoice')recalcI();if(section==='receipt')recalcR();sync(section);syncComputed(section);render();save()}if(action==='print'){setTab(section);window.print();reserveNextNumber(section)}if(action==='reset')reset(section);if(action==='add-item')addItem(section);if(action==='remove-item')removeItem(section,Number(btn.dataset.index))});
     function compareVersions(a,b){const pa=String(a).split('.').map(Number),pb=String(b).split('.').map(Number);for(let i=0;i<3;i+=1){const diff=(pa[i]||0)-(pb[i]||0);if(diff!==0)return diff>0?1:-1}return 0}
+    let isReloadingForUpdate=false;
     function applyWaitingWorker(worker){worker.postMessage({type:'SKIP_WAITING'})}
-    function updateStatusFromRegistration(reg,releaseData){if(reg.waiting){updateStatusLabel.textContent='Applying latest version...';applyWaitingWorker(reg.waiting);return true}if(reg.installing){updateStatusLabel.textContent='Updating...';return true}if(releaseData&&compareVersions(releaseData.version,APP_VERSION)>0){updateStatusLabel.textContent='Update available, refresh shortly';return true}updateStatusLabel.textContent='System is up to date';return false}
-    function watchServiceWorker(reg){if(updateStatusFromRegistration(reg)){return}reg.addEventListener('updatefound',()=>{const nw=reg.installing;if(!nw)return;updateStatusLabel.textContent='Updating...';nw.addEventListener('statechange',()=>{if(nw.state==='installed'&&navigator.serviceWorker.controller){updateStatusLabel.textContent='Applying latest version...';applyWaitingWorker(nw)}else if(nw.state==='activated'){updateStatusLabel.textContent='System is up to date'}})})}
-    async function checkForUpdates(reg,silent=false){try{if(!silent)updateStatusLabel.textContent='Checking for updates...';const res=await fetch('./release.json?ts='+Date.now(),{cache:'no-store'});const data=res.ok?await res.json():null;await reg.update();const latestReg=await navigator.serviceWorker.getRegistration();if(updateStatusFromRegistration(latestReg||reg,data)){return}updateStatusLabel.textContent='System is up to date'}catch(err){if(!navigator.onLine){updateStatusLabel.textContent='Offline mode';return}console.warn('Update check failed.',err);updateStatusLabel.textContent='Update check unavailable'}}
-    function registerSW(){if('serviceWorker' in navigator){window.addEventListener('load',async()=>{try{const reg=await navigator.serviceWorker.register('./service-worker.js');watchServiceWorker(reg);checkForUpdates(reg,true);setInterval(()=>checkForUpdates(reg,true),300000);navigator.serviceWorker.addEventListener('controllerchange',()=>window.location.reload())}catch(err){console.warn('Service worker registration failed.',err)}})}}
+    function updateStatusFromRegistration(reg){if(!navigator.onLine){updateStatusLabel.textContent='Offline mode';return true}if(reg&&reg.waiting){updateStatusLabel.textContent='Applying latest version...';applyWaitingWorker(reg.waiting);return true}if(reg&&reg.installing){updateStatusLabel.textContent='Updating...';return true}updateStatusLabel.textContent='System is up to date';return false}
+    function watchInstallingWorker(worker){if(!worker)return;worker.addEventListener('statechange',()=>{if(worker.state==='installed'&&navigator.serviceWorker.controller){updateStatusLabel.textContent='Applying latest version...';applyWaitingWorker(worker)}else if(worker.state==='activating'||worker.state==='activated'){updateStatusLabel.textContent='System is up to date'}})}
+    function watchServiceWorker(reg){updateStatusFromRegistration(reg);if(reg&&reg.installing){watchInstallingWorker(reg.installing)}reg.addEventListener('updatefound',()=>{const nw=reg.installing;if(!nw)return;updateStatusLabel.textContent='Updating...';watchInstallingWorker(nw)})}
+    async function checkForUpdates(reg,silent=false){try{if(!silent)updateStatusLabel.textContent='Checking for updates...';await reg.update();const latestReg=await navigator.serviceWorker.getRegistration();if(updateStatusFromRegistration(latestReg||reg)){return}updateStatusLabel.textContent='System is up to date'}catch(err){if(!navigator.onLine){updateStatusLabel.textContent='Offline mode';return}console.warn('Update check failed.',err);updateStatusLabel.textContent='Update check unavailable'}}
+    function registerSW(){if('serviceWorker' in navigator){window.addEventListener('load',async()=>{try{const reg=await navigator.serviceWorker.register(`./service-worker.js?v=${APP_VERSION}`,{updateViaCache:'none'});watchServiceWorker(reg);checkForUpdates(reg,true);setInterval(()=>checkForUpdates(reg,true),120000);navigator.serviceWorker.addEventListener('controllerchange',()=>{if(isReloadingForUpdate)return;isReloadingForUpdate=true;window.location.reload()});window.addEventListener('online',()=>checkForUpdates(reg,true));window.addEventListener('offline',()=>{updateStatusLabel.textContent='Offline mode'})}catch(err){console.warn('Service worker registration failed.',err)}})}}
     function exposeHooks(){window.PolyPureApp={getState(){return JSON.parse(JSON.stringify(state))},setSectionData(section,data){if(!state[section]||typeof data!=='object')return;state[section]={...state[section],...data};if(section==='quotation')recalcQ();if(section==='invoice')recalcI();if(section==='receipt')recalcR();sync(section);syncComputed(section);render();save()},switchSection(section){if(TITLES[section])setTab(section)}}}
     appVersionLabel.textContent='Version '+APP_VERSION;
     load();recalcQ();recalcI();recalcR();syncAll();syncComputed('quotation');syncComputed('invoice');syncComputed('receipt');render();save();saveSerials();registerSW();exposeHooks();
   </script>
 </body>
 </html>
+
+
 
 
 

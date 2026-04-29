@@ -1,10 +1,9 @@
-﻿const APP_VERSION = '1.4.5';
+﻿const APP_VERSION = '1.4.7';
 const CACHE_NAME = `poly-pure-pwa-${APP_VERSION}`;
 const APP_ASSETS = [
   './',
   './index.html',
   './manifest.json',
-  './service-worker.js',
   './icon.svg',
   './icon-192.svg',
   './icon-512.svg'
@@ -33,22 +32,52 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
+  const requestUrl = new URL(event.request.url);
+  const isControlFile =
+    requestUrl.pathname.endsWith('/release.json') ||
+    requestUrl.pathname.endsWith('/service-worker.js') ||
+    requestUrl.pathname.endsWith('/manifest.json');
+
+  if (isControlFile) {
+    event.respondWith(fetch(event.request, { cache: 'no-store' }));
+    return;
+  }
+
+  const isDocumentRequest =
+    event.request.mode === 'navigate' ||
+    requestUrl.pathname.endsWith('/') ||
+    requestUrl.pathname.endsWith('/index.html');
+
+  if (isDocumentRequest) {
+    event.respondWith(
+      fetch(event.request, { cache: 'no-store' })
+        .then((response) => {
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put('./index.html', clone));
+          return response;
+        })
+        .catch(() => caches.match('./index.html'))
+    );
+    return;
+  }
+
   event.respondWith(
     caches.match(event.request).then((cached) => {
       if (cached) {
         return cached;
       }
 
-      return fetch(event.request)
+      return fetch(event.request, { cache: 'no-store' })
         .then((response) => {
           const clone = response.clone();
           caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
           return response;
-        })
-        .catch(() => caches.match('./index.html'));
+        });
     })
   );
 });
+
+
 
 
 
