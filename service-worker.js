@@ -1,4 +1,4 @@
-﻿const APP_VERSION = '1.4.0';
+﻿const APP_VERSION = '1.4.1';
 const CACHE_NAME = `poly-pure-pwa-${APP_VERSION}`;
 const APP_ASSETS = [
   './',
@@ -49,6 +49,7 @@ self.addEventListener('fetch', (event) => {
     })
   );
 });
+
 
 
 

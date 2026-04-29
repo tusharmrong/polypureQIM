@@ -19,8 +19,6 @@
     .tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px} .tab{border:1px solid var(--line);background:#fff;border-radius:999px;padding:12px 10px;font-weight:700;cursor:pointer}
     .tab.active{background:linear-gradient(135deg,var(--red),var(--red2));color:#fff;border-color:transparent}
     .meta{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:14px;padding-top:14px;border-top:1px solid var(--line);color:var(--muted);font-size:.92rem}
-    .company-lines{display:grid;gap:3px;margin-top:8px;font-size:.94rem}
-    .company-lines strong{color:var(--ink)}
     .panel{display:none}.panel.active{display:block}.grid{display:grid;grid-template-columns:1fr;gap:18px}
     .card{background:#fff;border:1px solid var(--line);border-radius:24px;box-shadow:0 14px 30px rgba(15,23,42,.06);overflow:hidden}.card-head{padding:18px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,#fff,var(--soft))}.card-head h2,.card-head h3{margin:0;font-size:1.05rem}.card-head p{margin:6px 0 0;color:var(--muted)}.card-body{padding:18px}
     .form-grid{display:grid;grid-template-columns:1fr;gap:14px}.field{display:grid;gap:8px}.field label{font-weight:700}.field input,.field select,.field textarea{width:100%;padding:12px 14px;border:1px solid #d1d5db;border-radius:12px;background:#fff}.field textarea{min-height:100px;resize:vertical}.field input[readonly]{background:#f9fafb}
@@ -41,12 +39,6 @@
       <div class="brand">
         <div>
           <h1>POLY PURE</h1>
-          <p>Plastic shopping bag quotation, invoice, and receipt manager.</p>
-          <div class="company-lines">
-            <span><strong>Address:</strong> House-1/A, Road-11, Nikunja-2, Khilkhet, Dhaka</span>
-            <span><strong>Phone:</strong> 01914-981793</span>
-            <span><strong>Website:</strong> polypure.com.bd</span>
-          </div>
         </div>
         <div class="badge" id="sectionTitle">Quotation</div>
       </div>
@@ -56,7 +48,7 @@
         <button class="tab" type="button" data-tab="receipt">Money Receipt</button>
       </nav>
       <div class="meta">
-        <span id="appVersion">Version 1.4.0</span>
+        <span id="appVersion">Version 1.4.1</span>
         <span id="updateStatus">stable release</span>
       </div>
     </header>
@@ -152,7 +144,7 @@
     </main>
   </div>
   <script>
-    const APP_VERSION='1.4.0';
+    const APP_VERSION='1.4.1';
     const KEY='poly-pure-pwa-state-v1';
     const SERIAL_KEY='poly-pure-pwa-serials-v1';
     const TITLES={quotation:'Quotation',invoice:'Invoice',receipt:'Money Receipt'};
@@ -236,6 +228,7 @@ Must include your cash-out charge for mobile banking.`;
   </script>
 </body>
 </html>
+
 
 
 
