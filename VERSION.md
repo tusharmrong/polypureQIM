@@ -1,6 +1,6 @@
 ﻿# Versioning Guide
 
-Current app version: 1.4.1
+Current app version: 1.4.3
 
 Main release control file: release.json
 
